@@ -1,0 +1,2 @@
+instance-id: services
+local-hostname: services.sandbox.okd.local

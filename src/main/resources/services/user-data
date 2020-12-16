@@ -1,0 +1,222 @@
+#cloud-config
+datasource:
+  NoCloud:
+
+users:
+  - default
+  - name: okd
+    groups: wheel
+    shell: /bin/bash
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    lock_passwd: false
+    passwd: $5$uiBqfP3h7K./WLi8$XHG34ynpugz5o.bVCE5plbzYS0eVPnohVxs58Mf/pH1
+    ssh_authorized_keys:
+      - {{ sshPublicKey }}
+
+# Install my public ssh key to the first user-defined user configured
+# in cloud.cfg in the template (which is centos for CentOS cloud images)
+ssh_authorized_keys:
+  - {{ sshPublicKey }}
+
+timezone: Europe/Paris
+
+packages:
+  - dnsmasq
+  - haproxy
+  - bind-utils
+  - podman
+  - skopeo
+  - jq
+
+write_files:
+  - path: /etc/dnsmasq.d/okd_dnsmasq.conf
+    content: |
+      domain-needed
+      expand-hosts
+      bogus-priv
+
+      domain=okd.local
+{% for networkVM in networkVMs %}
+{% for dnsName in networkVM.dnsNames %}
+      address=/{{ dnsName }}/{{ networkVM.ip }}
+
+{% endfor %}
+{% endfor %}
+
+      cache-size=10000
+      log-dhcp
+      log-queries=extra
+      log-facility=/var/log/okd_dnsmasq.log
+  - path: /etc/haproxy/haproxy.cfg
+    content: |
+      # Global settings
+      #---------------------------------------------------------------------
+      global
+          maxconn     20000
+          log         /dev/log local0 info
+          chroot      /var/lib/haproxy
+          pidfile     /var/run/haproxy.pid
+          user        haproxy
+          group       haproxy
+          daemon
+
+          # turn on stats unix socket
+          stats socket /var/lib/haproxy/stats
+
+      #---------------------------------------------------------------------
+      # common defaults that all the 'listen' and 'backend' sections will
+      # use if not designated in their block
+      #---------------------------------------------------------------------
+      defaults
+          mode                    http
+          log                     global
+          option                  httplog
+          option                  dontlognull
+          option http-server-close
+          option forwardfor       except 127.0.0.0/8
+          option                  redispatch
+          retries                 3
+          timeout http-request    10s
+          timeout queue           1m
+          timeout connect         10s
+          timeout client          300s
+          timeout server          300s
+          timeout http-keep-alive 10s
+          timeout check           10s
+          maxconn                 20000
+
+      listen stats
+          bind :9000
+          mode http
+          stats enable
+          stats uri /
+
+      frontend okd4_k8s_api_fe
+          bind :6443
+          default_backend okd4_k8s_api_be
+          mode tcp
+          option tcplog
+
+      backend okd4_k8s_api_be
+          balance source
+          mode tcp
+{% for networkVM in okd4K8sApiBe %}
+{% for dnsName in networkVM.dnsNames %}
+          server      {{ dnsName }} {{ networkVM.ip }}:6443 check
+{% endfor %}
+{% endfor %}
+
+      frontend okd4_machine_config_server_fe
+          bind :22623
+          default_backend okd4_machine_config_server_be
+          mode tcp
+          option tcplog
+
+      backend okd4_machine_config_server_be
+          balance source
+          mode tcp
+{% for networkVM in okd4MachineConfigServerBe %}
+{% for dnsName in networkVM.dnsNames %}
+          server      {{ dnsName }} {{ networkVM.ip }}:22623 check
+{% endfor %}
+{% endfor %}
+
+      frontend okd4_http_ingress_traffic_fe
+          bind :80
+          default_backend okd4_http_ingress_traffic_be
+          mode tcp
+          option tcplog
+
+      backend okd4_http_ingress_traffic_be
+          balance source
+          mode tcp
+{% for networkVM in okd4HttpIngressTrafficBe %}
+{% for dnsName in networkVM.dnsNames %}
+          server      {{ dnsName }} {{ networkVM.ip }}:80 check
+{% endfor %}
+{% endfor %}
+
+      frontend okd4_https_ingress_traffic_fe
+          bind *:443
+          default_backend okd4_https_ingress_traffic_be
+          mode tcp
+          option tcplog
+
+      backend okd4_https_ingress_traffic_be
+          balance source
+          mode tcp
+{% for networkVM in okd4HttpIngressTrafficBe %}
+{% for dnsName in networkVM.dnsNames %}
+          server      {{ dnsName }} {{ networkVM.ip }}:443 check
+{% endfor %}
+{% endfor %}
+  - path: /var/lib/registry/certs/domain.crt
+    content: |
+{% set lines = domainCrt | split ('\n') %}
+{% for line in lines %}
+      {{ line }}
+
+{% endfor %}
+  - path: /var/lib/registry/certs/domain.key
+    content: |
+{% set lines = domainKey | split ('\n') %}
+{% for line in lines %}
+      {{ line }}
+
+{% endfor %}
+  - path: /etc/systemd/system/podman-registry.service
+    content: |
+      [Unit]
+      Description=Run podman registry
+      After=network-online.target
+      Wants=network-online.target
+
+      [Service]
+      TimeoutStartSec=0
+      ExecStartPre=-/usr/bin/mkdir -p /var/lib/registry
+      ExecStartPre=-/bin/podman pull docker.io/library/registry:2.6
+      ExecStart=/bin/podman run --privileged --name registry -p 5000:5000 \
+                  -v /var/lib/registry/data:/var/lib/registry:z \
+                  -v /var/lib/registry/certs:/certs:z \
+                  -e REGISTRY_HTTP_TLS_CERTIFICATE=/certs/domain.crt \
+                  -e REGISTRY_HTTP_TLS_KEY=/certs/domain.key \
+                  --restart=always registry:2.7.1
+
+      ExecStop=/bin/podman rm -f registry
+
+      [Install]
+      WantedBy=multi-user.target
+
+cloud_config_modules:
+  - resolv_conf
+  - package-update-upgrade-install
+  - runcmd
+
+manage_resolv_conf: true
+
+resolv_conf:
+  nameservers: ['127.0.0.1', '8.8.4.4', '8.8.8.8']
+
+# The message is located in /var/log/cloud-init.log
+final_message: "The system is finally up, after $UPTIME seconds"
+
+runcmd:
+  - /usr/bin/localectl set-keymap fr
+  - systemctl disable cloud-init.service
+  - systemctl enable --now cockpit.socket
+# fix issue when restarting dnsmasq service - missing write attribute for the root group... Create the file
+# with expected owner, group, selinux context
+  - touch /var/log/okd_dnsmasq.log
+  - chown dnsmasq /var/log/okd_dnsmasq.log
+  - chgrp root /var/log/okd_dnsmasq.log
+  - chmod g+rw,u+rw /var/log/okd_dnsmasq.log
+  - chcon -t dnsmasq_var_log_t /var/log/okd_dnsmasq.log
+# end of fix
+  - systemctl enable dnsmasq
+  - systemctl start dnsmasq
+  - setsebool -P haproxy_connect_any on
+  - systemctl start haproxy
+  - systemctl enable haproxy
+  - mkdir -p /var/lib/registry/data
+  - systemctl start podman-registry
+  - systemctl enable podman-registry

@@ -1,0 +1,10 @@
+version: 2
+ethernets:
+  eth0:
+    match:
+      mac_address: "52:54:10:00:05:57"
+    addresses:
+      - 10.0.5.57
+    gateway4: 10.0.5.1
+    nameservers:
+      addresses: [127.0.0.1,8.8.8.8]

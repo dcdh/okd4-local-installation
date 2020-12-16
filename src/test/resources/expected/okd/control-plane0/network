@@ -1,0 +1,10 @@
+[connection]
+id=ens2
+type=ethernet
+interface-name=ens2
+[ipv4]
+address1=10.0.5.59
+dns=10.0.5.57;8.8.8.8;8.8.4.4;
+dns-search=
+may-fail=false
+method=manual

@@ -1,0 +1,65 @@
+apiVersion: v1
+baseDomain: okd.local
+compute:
+- hyperthreading: Enabled
+  name: worker
+  replicas: 0
+controlPlane:
+  hyperthreading: Enabled
+  name: master
+  replicas: 1
+metadata:
+  name: sandbox
+networking:
+  clusterNetwork:
+  - cidr: 10.128.0.0/14
+    hostPrefix: 23
+  networkType: OpenShiftSDN
+  serviceNetwork:
+  - 172.30.0.0/16
+platform:
+  none: {}
+fips: false
+pullSecret: '{"auths":{"fake":{"auth": "bar"}}}'
+sshKey: 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQD41a83lxG3K9wZdhFeF98taBgVQ0II+LKkgJ+MMnAdhV5SbUHkdUU47BnM2na3ljlJhwPsc8WO+6NlQ/twD7CEPbCLTtDmp860NipDbROmFxtTCSEzaseeI9v6D1/QHsrBNW7RDgk+gmzTHM0GzXMXzh4KGZI90vGkTQYV+W2h7dlACWwncDPvrko9FVX5vye8dyXaJtcefRXbU0qKcomhLPIy18zakD4WYCeA2eJttRItxcV+sOWK3NHUy7dH6TNBI4ectBso4IM2O5r127t0RuF7gZQp0YQkh9hog0EP02WxB0cK4YNvxByh2MwoQxATySnqdpJ/SAICenZk1d6twn7Pr+LdMVnzDqz1cq/p9u+Ai3CDyCSBY+yhrc5D1SfE23Z5r01mfG08RYB/wOX5nlQXknDtKFoNJko994kd3VvgYIYsvLyePBRNEjqjJNJtIynvYZ+02ceZOdi/69UviLcYzjPdRVD96jX0om0WRLAcmh2KZu8V5umsdQ0ZqHM= OKD VM Login ssh key'
+additionalTrustBundle: |
+  -----BEGIN CERTIFICATE-----
+  MIIFtTCCA52gAwIBAgIUXpGThUouelRS7CXsNqaoLvtJIvUwDQYJKoZIhvcNAQEL
+  BQAwaTELMAkGA1UEBhMCRlIxDjAMBgNVBAgMBVBhcmlzMQ4wDAYDVQQHDAVQYXJp
+  czEVMBMGA1UECgwMT3JnYW5pc2F0aW9uMSMwIQYDVQQDDBpzZXJ2aWNlcy5zYW5k
+  Ym94Lm9rZC5sb2NhbDAgFw0yMDEyMDMyMDMxMTNaGA8yMTIwMTEwOTIwMzExM1ow
+  aTELMAkGA1UEBhMCRlIxDjAMBgNVBAgMBVBhcmlzMQ4wDAYDVQQHDAVQYXJpczEV
+  MBMGA1UECgwMT3JnYW5pc2F0aW9uMSMwIQYDVQQDDBpzZXJ2aWNlcy5zYW5kYm94
+  Lm9rZC5sb2NhbDCCAiIwDQYJKoZIhvcNAQEBBQADggIPADCCAgoCggIBANcm+R+W
+  Qyp6+f22cWzBjkrPC/z26LyECSgRi4QgfLZVUH924LR4nnrpy4xu6i7QLiKCd0NQ
+  RfTzMQDG1Gw+PuOXFfcOpqQYKY2DRH7Tnuou1R6B8zd+mNuGv/oKRaFYAmVFn+73
+  eHxyQIclt0Py8zzh24XPQilaOn0tpXeDAWo2YweXTGGUs8NrqaBnQfYlkSm+dPhL
+  7o8e7onLmQjL6+ARRUJwzd0uzPp6MCOhwMWZGeWnPCpD/TXGs9SSd97yLslVj2j6
+  T/lnx5ppdG7Zpz6rOn64UgxodzlEuwdZpM+HT5bkSj9aP1WSlhVVYfWEhDnPuNT4
+  iQOV6iNTZyUh9LsKItcqLJxqPM4iQihcpVbcy0r70XOIFLtGus53GXoM598uKWiX
+  UQPgfVN0VD8+/v1i4N6aZ1d8T8wLxncIKMP/kLYVFV828Mnn/JWHb3EU5VhOCkDp
+  PvherM6GhW62Q0qAwEutRkg/SqbJ5uZVpfmwWXeJ6NSIqwUPg8kh2VlObvo02n/J
+  doAAyHTvdXPjkT+1KB2ClbZaENTuQ34m8/LV5zvkPYZWdhlvuV9R5iXmvJ1ArP2J
+  4Ek+LCH0ssfY7r/e+QR9EGzbgZBAHIU50eSl2OwKRE0aqzf/GVzY8vpnkFlQYlke
+  JdRfQ+/nM6vNvOnuvyqRMj7GrBOszAQvi6LHAgMBAAGjUzBRMB0GA1UdDgQWBBTl
+  mDI3Xc5zhyUnXWGElFmqp1oOiDAfBgNVHSMEGDAWgBTlmDI3Xc5zhyUnXWGElFmq
+  p1oOiDAPBgNVHRMBAf8EBTADAQH/MA0GCSqGSIb3DQEBCwUAA4ICAQBAThvQhFTx
+  3J7UzAgZuURJLBsIDMrpVhkIJihHw3h12bxA1if6tcPpPuRIn3N1xA93+Y44bex1
+  93niTv2pls7noeMqCxnGPaSTfcYyekxTBzncMWW3+aOFsgGLMDuW+d/iQXvl5FGI
+  UfMsnVRv4chxUeKvb/VkStA4ribA0zpwgCvZakoafZOvEK6tGfKApwk8Xtb0aHn3
+  bTt9JCot1bGInjAaz2HpH3q/wkkjGJPy4V4woVGnxun2q/K5HCPzD5unizpz2e4C
+  +TlJX+Iita7gcOLgRgmiGgAPZpUkurRIopUnEnMi5LNLPRRZwPY+ZvCEg9zP2PL1
+  M10VI2dMDfKsv4z44Sthjkc1jcDr90HWPEJw1MR6QiA1SuuqkK5j4pQDhHIBMi95
+  qJdQ7jnFA5BcMe8wc9kbyvLWeGGe/368HUf0QlBMZymgr3HQZhmsGdLPbckAUOyM
+  Yz9+n/zxn28m0njPTyLHgpk2W5d9QTvk09ICN1NTfneaMhhQHvcTrrQ4dwC/16NR
+  wMblJB4O+/oKKYslcJEKxlRhn9M6JmYwu04a9VzbAeimGZlBxVEq36xts3lEJ4BA
+  mchKLynQ96PSeLOKb9QoPgxJk+mmfnfQzFlTBnCvsz5G5wyJ5gsEzSYThvErgtPv
+  ITGfX0pKhCEP+GqXJhfjrcMQTUP49GZ8yg==
+  -----END CERTIFICATE-----
+imageContentSources:
+- mirrors:
+  - services.sandbox.okd.local:5000/openshift/okd
+  source: quay.io/openshift/okd
+- mirrors:
+  - services.sandbox.okd.local:5000/openshift/okd-content
+  source: quay.io/openshift/okd-content

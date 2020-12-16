@@ -1,0 +1,10 @@
+<network>
+    <name>okd_network</name>
+    <bridge name="virbr1" />
+    <forward mode="nat">
+        <nat>
+            <port start='0' end='65535'/>
+        </nat>
+    </forward>
+    <ip address='10.0.5.1' netmask='255.255.255.0' />
+</network>

@@ -1,0 +1,286 @@
+#cloud-config
+datasource:
+  NoCloud:
+
+users:
+  - default
+  - name: okd
+    groups: wheel
+    shell: /bin/bash
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    lock_passwd: false
+    passwd: $5$uiBqfP3h7K./WLi8$XHG34ynpugz5o.bVCE5plbzYS0eVPnohVxs58Mf/pH1
+    ssh_authorized_keys:
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQD41a83lxG3K9wZdhFeF98taBgVQ0II+LKkgJ+MMnAdhV5SbUHkdUU47BnM2na3ljlJhwPsc8WO+6NlQ/twD7CEPbCLTtDmp860NipDbROmFxtTCSEzaseeI9v6D1/QHsrBNW7RDgk+gmzTHM0GzXMXzh4KGZI90vGkTQYV+W2h7dlACWwncDPvrko9FVX5vye8dyXaJtcefRXbU0qKcomhLPIy18zakD4WYCeA2eJttRItxcV+sOWK3NHUy7dH6TNBI4ectBso4IM2O5r127t0RuF7gZQp0YQkh9hog0EP02WxB0cK4YNvxByh2MwoQxATySnqdpJ/SAICenZk1d6twn7Pr+LdMVnzDqz1cq/p9u+Ai3CDyCSBY+yhrc5D1SfE23Z5r01mfG08RYB/wOX5nlQXknDtKFoNJko994kd3VvgYIYsvLyePBRNEjqjJNJtIynvYZ+02ceZOdi/69UviLcYzjPdRVD96jX0om0WRLAcmh2KZu8V5umsdQ0ZqHM= OKD VM Login ssh key
+# Install my public ssh key to the first user-defined user configured
+# in cloud.cfg in the template (which is centos for CentOS cloud images)
+ssh_authorized_keys:
+  - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQD41a83lxG3K9wZdhFeF98taBgVQ0II+LKkgJ+MMnAdhV5SbUHkdUU47BnM2na3ljlJhwPsc8WO+6NlQ/twD7CEPbCLTtDmp860NipDbROmFxtTCSEzaseeI9v6D1/QHsrBNW7RDgk+gmzTHM0GzXMXzh4KGZI90vGkTQYV+W2h7dlACWwncDPvrko9FVX5vye8dyXaJtcefRXbU0qKcomhLPIy18zakD4WYCeA2eJttRItxcV+sOWK3NHUy7dH6TNBI4ectBso4IM2O5r127t0RuF7gZQp0YQkh9hog0EP02WxB0cK4YNvxByh2MwoQxATySnqdpJ/SAICenZk1d6twn7Pr+LdMVnzDqz1cq/p9u+Ai3CDyCSBY+yhrc5D1SfE23Z5r01mfG08RYB/wOX5nlQXknDtKFoNJko994kd3VvgYIYsvLyePBRNEjqjJNJtIynvYZ+02ceZOdi/69UviLcYzjPdRVD96jX0om0WRLAcmh2KZu8V5umsdQ0ZqHM= OKD VM Login ssh key
+timezone: Europe/Paris
+
+packages:
+  - dnsmasq
+  - haproxy
+  - bind-utils
+  - podman
+  - skopeo
+  - jq
+
+write_files:
+  - path: /etc/dnsmasq.d/okd_dnsmasq.conf
+    content: |
+      domain-needed
+      expand-hosts
+      bogus-priv
+
+      domain=okd.local
+      address=/okd.local/10.0.5.57
+      address=/lb.sandbox.okd.local/10.0.5.57
+      address=/api.sandbox.okd.local/10.0.5.57
+      address=/api-int.sandbox.okd.local/10.0.5.57
+      address=/bootstrap.sandbox.okd.local/10.0.5.58
+      address=/control-plane-0.sandbox.okd.local/10.0.5.59
+      address=/etcd-0.sandbox.okd.local/10.0.5.59
+
+      cache-size=10000
+      log-dhcp
+      log-queries=extra
+      log-facility=/var/log/okd_dnsmasq.log
+  - path: /etc/haproxy/haproxy.cfg
+    content: |
+      # Global settings
+      #---------------------------------------------------------------------
+      global
+          maxconn     20000
+          log         /dev/log local0 info
+          chroot      /var/lib/haproxy
+          pidfile     /var/run/haproxy.pid
+          user        haproxy
+          group       haproxy
+          daemon
+
+          # turn on stats unix socket
+          stats socket /var/lib/haproxy/stats
+
+      #---------------------------------------------------------------------
+      # common defaults that all the 'listen' and 'backend' sections will
+      # use if not designated in their block
+      #---------------------------------------------------------------------
+      defaults
+          mode                    http
+          log                     global
+          option                  httplog
+          option                  dontlognull
+          option http-server-close
+          option forwardfor       except 127.0.0.0/8
+          option                  redispatch
+          retries                 3
+          timeout http-request    10s
+          timeout queue           1m
+          timeout connect         10s
+          timeout client          300s
+          timeout server          300s
+          timeout http-keep-alive 10s
+          timeout check           10s
+          maxconn                 20000
+
+      listen stats
+          bind :9000
+          mode http
+          stats enable
+          stats uri /
+
+      frontend okd4_k8s_api_fe
+          bind :6443
+          default_backend okd4_k8s_api_be
+          mode tcp
+          option tcplog
+
+      backend okd4_k8s_api_be
+          balance source
+          mode tcp
+          server      bootstrap.sandbox.okd.local 10.0.5.58:6443 check
+          server      control-plane-0.sandbox.okd.local 10.0.5.59:6443 check
+          server      etcd-0.sandbox.okd.local 10.0.5.59:6443 check
+
+      frontend okd4_machine_config_server_fe
+          bind :22623
+          default_backend okd4_machine_config_server_be
+          mode tcp
+          option tcplog
+
+      backend okd4_machine_config_server_be
+          balance source
+          mode tcp
+          server      bootstrap.sandbox.okd.local 10.0.5.58:22623 check
+          server      control-plane-0.sandbox.okd.local 10.0.5.59:22623 check
+          server      etcd-0.sandbox.okd.local 10.0.5.59:22623 check
+
+      frontend okd4_http_ingress_traffic_fe
+          bind :80
+          default_backend okd4_http_ingress_traffic_be
+          mode tcp
+          option tcplog
+
+      backend okd4_http_ingress_traffic_be
+          balance source
+          mode tcp
+          server      control-plane-0.sandbox.okd.local 10.0.5.59:80 check
+          server      etcd-0.sandbox.okd.local 10.0.5.59:80 check
+
+      frontend okd4_https_ingress_traffic_fe
+          bind *:443
+          default_backend okd4_https_ingress_traffic_be
+          mode tcp
+          option tcplog
+
+      backend okd4_https_ingress_traffic_be
+          balance source
+          mode tcp
+          server      control-plane-0.sandbox.okd.local 10.0.5.59:443 check
+          server      etcd-0.sandbox.okd.local 10.0.5.59:443 check
+  - path: /var/lib/registry/certs/domain.crt
+    content: |
+      -----BEGIN CERTIFICATE-----
+      MIIFtTCCA52gAwIBAgIUXpGThUouelRS7CXsNqaoLvtJIvUwDQYJKoZIhvcNAQEL
+      BQAwaTELMAkGA1UEBhMCRlIxDjAMBgNVBAgMBVBhcmlzMQ4wDAYDVQQHDAVQYXJp
+      czEVMBMGA1UECgwMT3JnYW5pc2F0aW9uMSMwIQYDVQQDDBpzZXJ2aWNlcy5zYW5k
+      Ym94Lm9rZC5sb2NhbDAgFw0yMDEyMDMyMDMxMTNaGA8yMTIwMTEwOTIwMzExM1ow
+      aTELMAkGA1UEBhMCRlIxDjAMBgNVBAgMBVBhcmlzMQ4wDAYDVQQHDAVQYXJpczEV
+      MBMGA1UECgwMT3JnYW5pc2F0aW9uMSMwIQYDVQQDDBpzZXJ2aWNlcy5zYW5kYm94
+      Lm9rZC5sb2NhbDCCAiIwDQYJKoZIhvcNAQEBBQADggIPADCCAgoCggIBANcm+R+W
+      Qyp6+f22cWzBjkrPC/z26LyECSgRi4QgfLZVUH924LR4nnrpy4xu6i7QLiKCd0NQ
+      RfTzMQDG1Gw+PuOXFfcOpqQYKY2DRH7Tnuou1R6B8zd+mNuGv/oKRaFYAmVFn+73
+      eHxyQIclt0Py8zzh24XPQilaOn0tpXeDAWo2YweXTGGUs8NrqaBnQfYlkSm+dPhL
+      7o8e7onLmQjL6+ARRUJwzd0uzPp6MCOhwMWZGeWnPCpD/TXGs9SSd97yLslVj2j6
+      T/lnx5ppdG7Zpz6rOn64UgxodzlEuwdZpM+HT5bkSj9aP1WSlhVVYfWEhDnPuNT4
+      iQOV6iNTZyUh9LsKItcqLJxqPM4iQihcpVbcy0r70XOIFLtGus53GXoM598uKWiX
+      UQPgfVN0VD8+/v1i4N6aZ1d8T8wLxncIKMP/kLYVFV828Mnn/JWHb3EU5VhOCkDp
+      PvherM6GhW62Q0qAwEutRkg/SqbJ5uZVpfmwWXeJ6NSIqwUPg8kh2VlObvo02n/J
+      doAAyHTvdXPjkT+1KB2ClbZaENTuQ34m8/LV5zvkPYZWdhlvuV9R5iXmvJ1ArP2J
+      4Ek+LCH0ssfY7r/e+QR9EGzbgZBAHIU50eSl2OwKRE0aqzf/GVzY8vpnkFlQYlke
+      JdRfQ+/nM6vNvOnuvyqRMj7GrBOszAQvi6LHAgMBAAGjUzBRMB0GA1UdDgQWBBTl
+      mDI3Xc5zhyUnXWGElFmqp1oOiDAfBgNVHSMEGDAWgBTlmDI3Xc5zhyUnXWGElFmq
+      p1oOiDAPBgNVHRMBAf8EBTADAQH/MA0GCSqGSIb3DQEBCwUAA4ICAQBAThvQhFTx
+      3J7UzAgZuURJLBsIDMrpVhkIJihHw3h12bxA1if6tcPpPuRIn3N1xA93+Y44bex1
+      93niTv2pls7noeMqCxnGPaSTfcYyekxTBzncMWW3+aOFsgGLMDuW+d/iQXvl5FGI
+      UfMsnVRv4chxUeKvb/VkStA4ribA0zpwgCvZakoafZOvEK6tGfKApwk8Xtb0aHn3
+      bTt9JCot1bGInjAaz2HpH3q/wkkjGJPy4V4woVGnxun2q/K5HCPzD5unizpz2e4C
+      +TlJX+Iita7gcOLgRgmiGgAPZpUkurRIopUnEnMi5LNLPRRZwPY+ZvCEg9zP2PL1
+      M10VI2dMDfKsv4z44Sthjkc1jcDr90HWPEJw1MR6QiA1SuuqkK5j4pQDhHIBMi95
+      qJdQ7jnFA5BcMe8wc9kbyvLWeGGe/368HUf0QlBMZymgr3HQZhmsGdLPbckAUOyM
+      Yz9+n/zxn28m0njPTyLHgpk2W5d9QTvk09ICN1NTfneaMhhQHvcTrrQ4dwC/16NR
+      wMblJB4O+/oKKYslcJEKxlRhn9M6JmYwu04a9VzbAeimGZlBxVEq36xts3lEJ4BA
+      mchKLynQ96PSeLOKb9QoPgxJk+mmfnfQzFlTBnCvsz5G5wyJ5gsEzSYThvErgtPv
+      ITGfX0pKhCEP+GqXJhfjrcMQTUP49GZ8yg==
+      -----END CERTIFICATE-----
+  - path: /var/lib/registry/certs/domain.key
+    content: |
+      -----BEGIN PRIVATE KEY-----
+      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
+      diibr5vav8WRp7aK14r99ufS0rGEmCQ=
+      -----END PRIVATE KEY-----
+  - path: /etc/systemd/system/podman-registry.service
+    content: |
+      [Unit]
+      Description=Run podman registry
+      After=network-online.target
+      Wants=network-online.target
+
+      [Service]
+      TimeoutStartSec=0
+      ExecStartPre=-/usr/bin/mkdir -p /var/lib/registry
+      ExecStartPre=-/bin/podman pull docker.io/library/registry:2.6
+      ExecStart=/bin/podman run --privileged --name registry -p 5000:5000 \
+                  -v /var/lib/registry/data:/var/lib/registry:z \
+                  -v /var/lib/registry/certs:/certs:z \
+                  -e REGISTRY_HTTP_TLS_CERTIFICATE=/certs/domain.crt \
+                  -e REGISTRY_HTTP_TLS_KEY=/certs/domain.key \
+                  --restart=always registry:2.7.1
+
+      ExecStop=/bin/podman rm -f registry
+
+      [Install]
+      WantedBy=multi-user.target
+
+cloud_config_modules:
+  - resolv_conf
+  - package-update-upgrade-install
+  - runcmd
+
+manage_resolv_conf: true
+
+resolv_conf:
+  nameservers: ['127.0.0.1', '8.8.4.4', '8.8.8.8']
+
+# The message is located in /var/log/cloud-init.log
+final_message: "The system is finally up, after $UPTIME seconds"
+
+runcmd:
+  - /usr/bin/localectl set-keymap fr
+  - systemctl disable cloud-init.service
+  - systemctl enable --now cockpit.socket
+# fix issue when restarting dnsmasq service - missing write attribute for the root group... Create the file
+# with expected owner, group, selinux context
+  - touch /var/log/okd_dnsmasq.log
+  - chown dnsmasq /var/log/okd_dnsmasq.log
+  - chgrp root /var/log/okd_dnsmasq.log
+  - chmod g+rw,u+rw /var/log/okd_dnsmasq.log
+  - chcon -t dnsmasq_var_log_t /var/log/okd_dnsmasq.log
+# end of fix
+  - systemctl enable dnsmasq
+  - systemctl start dnsmasq
+  - setsebool -P haproxy_connect_any on
+  - systemctl start haproxy
+  - systemctl enable haproxy
+  - mkdir -p /var/lib/registry/data
+  - systemctl start podman-registry
+  - systemctl enable podman-registry
