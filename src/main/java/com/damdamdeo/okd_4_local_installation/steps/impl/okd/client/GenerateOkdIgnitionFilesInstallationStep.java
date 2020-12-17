@@ -75,6 +75,8 @@ public class GenerateOkdIgnitionFilesInstallationStep extends InstallationStep {
             context.put("addressIp", targetNetworkVm.ip());
             context.put("okdDnsIp", serviceNetworkVm.ip());
             context.put("okdNetworkGatewayIp", okdNetwork.gatewayIp());// sans la gateway le curl ne marche pas !!!! et le ping me retourne network unreachable
+            context.put("subnetCIDRNotation", okdNetwork.subnetCIDRNotation());
+            context.put("clusterBaseDomain", okdNetwork.clusterBaseDomain());
 
             final Writer writer = new StringWriter();
             compiledTemplate.evaluate(writer, context);

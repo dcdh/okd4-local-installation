@@ -3,11 +3,12 @@ id=ens3
 type=ethernet
 interface-name=ens3
 [ipv4]
-address1={{ addressIp }}
+address1={{ addressIp }}{{ subnetCIDRNotation }}
 
 gateway={{ okdNetworkGatewayIp }}
 
 dns={{ okdDnsIp }};8.8.8.8;8.8.4.4;
-dns-search=
+dns-search={{ clusterBaseDomain }}
+
 may-fail=false
 method=manual

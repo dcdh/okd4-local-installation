@@ -4,6 +4,11 @@
 
 **okd**, **local installation**, **libvirt**, **one services (dns, lb) machine**, **one bootstrap**, **one control plane (master)**, **one worker**
 
+## References
+
+> https://github.com/cgruver/okd4-single-node-cluster
+>
+
 ## How to
 
 > build using **mvn clean install**

@@ -4,9 +4,10 @@ ethernets:
     match:
       mac_address: "{{ serviceNetworkMac }}"
     addresses:
-      - {{ serviceNetworkIp }}
+      - {{ serviceNetworkIp }}{{ subnetCIDRNotation }}
 
     gateway4: {{ okdNetworkGatewayIp }}
 
     nameservers:
+      search: [{{ clusterBaseDomain }}]
       addresses: [127.0.0.1,8.8.8.8]

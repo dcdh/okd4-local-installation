@@ -98,6 +98,7 @@ public class CreateServicesCentOS8GuestVirtualMachineInstallationStep extends In
             context.put("okd4MachineConfigServerBe", okdNetwork.findNetworkVMsByVmType(VmType.BOOTSTRAP, VmType.MASTER));
             context.put("okd4HttpIngressTrafficBe", okdNetwork.findNetworkVMsByVmType(VmType.MASTER, VmType.WORKER));
             context.put("okd4HttpsIngressTrafficBe", okdNetwork.findNetworkVMsByVmType(VmType.MASTER, VmType.WORKER));
+            context.put("clusterBaseDomain", okdNetwork.clusterBaseDomain());
 
             final Writer writer = new StringWriter();
             compiledTemplate.evaluate(writer, context);
@@ -116,6 +117,8 @@ public class CreateServicesCentOS8GuestVirtualMachineInstallationStep extends In
             context.put("serviceNetworkMac", serviceNetworkVM.mac());
             context.put("serviceNetworkIp", serviceNetworkVM.ip());
             context.put("okdNetworkGatewayIp", okdNetwork.gatewayIp());
+            context.put("subnetCIDRNotation", okdNetwork.subnetCIDRNotation());
+            context.put("clusterBaseDomain", okdNetwork.clusterBaseDomain());
 
             final Writer writer = new StringWriter();
             compiledTemplate.evaluate(writer, context);

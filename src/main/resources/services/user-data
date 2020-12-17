@@ -35,7 +35,8 @@ write_files:
       expand-hosts
       bogus-priv
 
-      domain=okd.local
+      domain={{ clusterBaseDomain }}
+
 {% for networkVM in networkVMs %}
 {% for dnsName in networkVM.dnsNames %}
       address=/{{ dnsName }}/{{ networkVM.ip }}
