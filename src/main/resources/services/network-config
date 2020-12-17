@@ -4,7 +4,7 @@ ethernets:
     match:
       mac_address: "{{ serviceNetworkMac }}"
     addresses:
-      - {{ serviceNetworkIp }}{{ subnetCIDRNotation }}
+      - {{ serviceNetworkIp }}/{{ netmask.prefix }}
 
     gateway4: {{ okdNetworkGatewayIp }}
 

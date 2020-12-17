@@ -16,7 +16,7 @@ public final class OkdNetwork {
     private final String broadcastIp;
     private final String clusterBaseDomain;
     private final String clusterName;
-    private final String subnetCIDRNotation;
+    private final Netmask netmask;
     private final List<NetworkVM> networkVMS;
 
     public OkdNetwork(final String bridgeName,
@@ -24,7 +24,7 @@ public final class OkdNetwork {
                       final String broadcastIp,
                       final String clusterBaseDomain,
                       final String clusterName,
-                      final String subnetCIDRNotation,
+                      final Netmask netmask,
                       final List<NetworkVM> networkVMS) {
         this.name = "okd_network";
         this.bridgeName = Objects.requireNonNull(bridgeName);
@@ -36,10 +36,7 @@ public final class OkdNetwork {
         this.clusterBaseDomain = Objects.requireNonNull(clusterBaseDomain);// TODO tester value
         this.clusterName = Objects.requireNonNull(clusterName);// TODO tester value
         this.networkVMS = Objects.requireNonNull(networkVMS);// TODO tester contenu
-        this.subnetCIDRNotation = Objects.requireNonNull(subnetCIDRNotation);
-        if (!subnetCIDRNotation.startsWith("/")) {
-            throw new IllegalStateException(String.format("subnet CIDR Notation '%s' is invalid", subnetCIDRNotation));
-        }
+        this.netmask = Objects.requireNonNull(netmask);
     }
 
     public String name() {
@@ -66,8 +63,8 @@ public final class OkdNetwork {
         return clusterName;
     }
 
-    public String subnetCIDRNotation() {
-        return subnetCIDRNotation;
+    public Netmask netmask() {
+        return netmask;
     }
 
     public List<NetworkVM> networkVMs() {
@@ -119,13 +116,13 @@ public final class OkdNetwork {
                 Objects.equals(broadcastIp, that.broadcastIp) &&
                 Objects.equals(clusterBaseDomain, that.clusterBaseDomain) &&
                 Objects.equals(clusterName, that.clusterName) &&
-                Objects.equals(subnetCIDRNotation, that.subnetCIDRNotation) &&
+                Objects.equals(netmask, that.netmask) &&
                 Objects.equals(networkVMS, that.networkVMS);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, bridgeName, gatewayIp, broadcastIp, clusterBaseDomain, clusterName, subnetCIDRNotation, networkVMS);
+        return Objects.hash(name, bridgeName, gatewayIp, broadcastIp, clusterBaseDomain, clusterName, netmask, networkVMS);
     }
 
     @Override
@@ -137,7 +134,7 @@ public final class OkdNetwork {
                 ", broadcastIp='" + broadcastIp + '\'' +
                 ", clusterBaseDomain='" + clusterBaseDomain + '\'' +
                 ", clusterName='" + clusterName + '\'' +
-                ", subnetCIDRNotation='" + subnetCIDRNotation + '\'' +
+                ", netmask='" + netmask + '\'' +
                 ", networkVMS=" + networkVMS +
                 '}';
     }

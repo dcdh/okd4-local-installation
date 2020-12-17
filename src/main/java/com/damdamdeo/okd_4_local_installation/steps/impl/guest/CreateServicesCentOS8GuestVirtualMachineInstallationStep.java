@@ -117,7 +117,7 @@ public class CreateServicesCentOS8GuestVirtualMachineInstallationStep extends In
             context.put("serviceNetworkMac", serviceNetworkVM.mac());
             context.put("serviceNetworkIp", serviceNetworkVM.ip());
             context.put("okdNetworkGatewayIp", okdNetwork.gatewayIp());
-            context.put("subnetCIDRNotation", okdNetwork.subnetCIDRNotation());
+            context.put("netmask", okdNetwork.netmask());
             context.put("clusterBaseDomain", okdNetwork.clusterBaseDomain());
 
             final Writer writer = new StringWriter();

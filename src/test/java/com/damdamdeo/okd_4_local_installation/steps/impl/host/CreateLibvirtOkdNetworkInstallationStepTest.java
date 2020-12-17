@@ -2,6 +2,7 @@ package com.damdamdeo.okd_4_local_installation.steps.impl.host;
 
 import com.damdamdeo.okd_4_local_installation.steps.impl.BaseInstallationPath;
 import com.damdamdeo.okd_4_local_installation.steps.impl.GuestVirtualMachine;
+import com.damdamdeo.okd_4_local_installation.steps.impl.Netmask;
 import com.damdamdeo.okd_4_local_installation.steps.impl.OkdNetwork;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,7 +32,7 @@ public class CreateLibvirtOkdNetworkInstallationStepTest {
                         "10.0.5.255",
                         "okd.local",
                         "sandbox",
-                        "/24",
+                        new Netmask("255.255.255.0/24"),
                         Arrays.asList(
                                 new NetworkVM(serviceGuestVirtualMachine,"10.0.5.57", "52:54:10:00:05:57", "services.sandbox.okd.local", Arrays.asList("okd.local", "lb.sandbox.okd.local","api.sandbox.okd.local","api-int.sandbox.okd.local")),
                                 new NetworkVM(bootstrapGuestVirtualMachine,"10.0.5.58", "52:54:10:00:05:58", "bootstrap.sandbox.okd.local", Arrays.asList("bootstrap.sandbox.okd.local")),
