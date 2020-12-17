@@ -3,8 +3,7 @@ id=ens3
 type=ethernet
 interface-name=ens3
 [ipv4]
-address1=10.0.5.58/24
-gateway=10.0.5.1
+address1=10.0.5.58/24,10.0.5.1
 dns=10.0.5.57;8.8.8.8;8.8.4.4;
 dns-search=okd.local
 may-fail=false
