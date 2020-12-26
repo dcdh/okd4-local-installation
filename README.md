@@ -109,3 +109,15 @@
 
 > ### Need to use another way to define virtual machine static network with okd ignition content.
 >
+
+## DHCP how it works
+
+> We rely on libvirt network to define the DHCP service.
+>
+> Under the hood libvirt uses dnsmasq.
+>
+> Libvirt do not give the ability to defined the option 6 (aka dns-server) dhcp option.
+> However we can fix it by adding a dnsmasq option directly. It needs version 5.6.0 min of libvirt to work.
+> Cf. https://bugzilla.redhat.com/show_bug.cgi?id=824573#c32
+>
+> To test the dhcp you can use this command `dhcping -i -s 10.0.5.1 -c 10.0.5.57 -h 52:54:10:00:05:57 -V`

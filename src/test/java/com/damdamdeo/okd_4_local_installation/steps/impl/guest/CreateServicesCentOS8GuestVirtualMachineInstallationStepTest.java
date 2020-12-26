@@ -119,20 +119,6 @@ public class CreateServicesCentOS8GuestVirtualMachineInstallationStepTest {
     }
 
     @Test
-    public void should_generate_expected_network_config_file() throws Exception {
-        // Given
-
-        // When
-        createServicesCentOS8GuestVirtualMachineInstallationStep.commandToExecute();
-
-        // Then
-        final String generatedServicesNetworkConfig = new Scanner(new FileInputStream("/tmp/okd/services.sandbox.okd.local/network-config")).useDelimiter("\\A").next();
-        final String expectedServicesNetworkConfig = new Scanner(getClass().getResourceAsStream("/expected/services/network-config")).useDelimiter("\\A").next();
-
-        assertThat(generatedServicesNetworkConfig).isEqualTo(expectedServicesNetworkConfig);
-    }
-
-    @Test
     public void should_generate_expected_vm() throws Exception {
         // Given
 
@@ -158,7 +144,7 @@ public class CreateServicesCentOS8GuestVirtualMachineInstallationStepTest {
                 .isEqualTo("sed -i '/^10.0.5.57/d' ~/.ssh/known_hosts && " +
                         "mkdir -p /tmp/okd/services.sandbox.okd.local/ && " +
                         "cp -f /tmp/okd/CentOS-8-GenericCloud-8.2.2004-20200611.2.x86_64.qcow2 /tmp/okd/services.sandbox.okd.local/CentOS-8-GenericCloud-8.2.2004-20200611.2.x86_64.qcow2 && " +
-                        "genisoimage -output /tmp/okd/services.sandbox.okd.local/boot-init.iso -volid cidata -joliet -r /tmp/okd/services.sandbox.okd.local/user-data /tmp/okd/services.sandbox.okd.local/meta-data /tmp/okd/services.sandbox.okd.local/network-config && " +
+                        "genisoimage -output /tmp/okd/services.sandbox.okd.local/boot-init.iso -volid cidata -joliet -r /tmp/okd/services.sandbox.okd.local/user-data /tmp/okd/services.sandbox.okd.local/meta-data && " +
                         "qemu-img resize /tmp/okd/services.sandbox.okd.local/CentOS-8-GenericCloud-8.2.2004-20200611.2.x86_64.qcow2 25G && " +
                         "virsh create /tmp/okd/services.sandbox.okd.local/vm.xml && " +
                         "(while ! nmap -p22 10.0.5.57 -oG - | grep -q 22/open; do echo 'waiting for port 22 to be open' && sleep 5; done) && " +

@@ -1,4 +1,4 @@
-<network>
+<network xmlns:dnsmasq='http://libvirt.org/schemas/network/dnsmasq/1.0'>
     <name>{{ networkName }}</name>
     <bridge name="{{ networkInterfaceBridgeName }}" />
     <forward mode="nat">
@@ -6,5 +6,15 @@
             <port start='0' end='65535'/>
         </nat>
     </forward>
-    <ip address='{{ networkGatewayIp }}' netmask='255.255.255.0' />
+    <ip address='{{ networkGatewayIp }}' netmask='{{ networkNetMaskIp }}'>
+        <dhcp>
+{% for networkVM in networkVMs %}
+            <host mac="{{ networkVM.mac }}" name="{{ networkVM.fqdn }}" ip="{{ networkVM.ip }}"/>
+{% endfor %}
+        </dhcp>
+    </ip>
+    <dnsmasq:options>
+        <dnsmasq:option value="dhcp-option=option:dns-server,{{ serviceNetworkIp }},8.8.8.8"/>
+        <dnsmasq:option value="log-dhcp"/>
+    </dnsmasq:options>
 </network>

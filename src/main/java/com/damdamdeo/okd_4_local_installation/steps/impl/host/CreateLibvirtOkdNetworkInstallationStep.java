@@ -30,6 +30,9 @@ public class CreateLibvirtOkdNetworkInstallationStep extends InstallationStep {
             context.put("networkName", okdNetwork.name());
             context.put("networkInterfaceBridgeName", okdNetwork.bridgeName());
             context.put("networkGatewayIp", okdNetwork.gatewayIp());
+            context.put("networkNetMaskIp", okdNetwork.netmask().getIp());
+            context.put("networkVMs", okdNetwork.networkVMs());
+            context.put("serviceNetworkIp", okdNetwork.getServiceNetworkVM().ip());
             final Writer writer = new StringWriter();
             compiledTemplate.evaluate(writer, context);
 

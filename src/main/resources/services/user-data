@@ -1,6 +1,4 @@
 #cloud-config
-datasource:
-  NoCloud:
 
 users:
   - default
@@ -187,16 +185,6 @@ write_files:
 
       [Install]
       WantedBy=multi-user.target
-
-cloud_config_modules:
-  - resolv_conf
-  - package-update-upgrade-install
-  - runcmd
-
-manage_resolv_conf: true
-
-resolv_conf:
-  nameservers: ['127.0.0.1', '8.8.4.4', '8.8.8.8']
 
 # The message is located in /var/log/cloud-init.log
 final_message: "The system is finally up, after $UPTIME seconds"
