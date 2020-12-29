@@ -64,9 +64,7 @@ public class GenerateOkdIgnitionFilesInstallationStepTest {
     public void deleteAllFiles() {
         // je supprime mes fichiers
         // humm, je vais quand même les garders. Les fichiers sont dans /tmp...
-        Arrays.asList("/tmp/okd/bootstrap.sandbox.okd.local/etc/NetworkManager/system-connections/ens3.nmconnection",
-                "/tmp/okd/bootstrap.sandbox.okd.local/etc/ssh/sshd_config.d/20-enable-passwords.conf",
-                "/tmp/okd/control-plane-0.sandbox.okd.local/etc/NetworkManager/system-connections/ens3.nmconnection",
+        Arrays.asList("/tmp/okd/bootstrap.sandbox.okd.local/etc/ssh/sshd_config.d/20-enable-passwords.conf",
                 "/tmp/okd/control-plane-0.sandbox.okd.local/etc/ssh/sshd_config.d/20-enable-passwords.conf")
                 .forEach(file -> {
                     try {
@@ -101,20 +99,6 @@ public class GenerateOkdIgnitionFilesInstallationStepTest {
         final String expectedServicesMetadata = new Scanner(getClass().getResourceAsStream("/expected/okd/install-config.yaml")).useDelimiter("\\A").next();
 
         assertThat(generatedServicesMetadata).isEqualTo(expectedServicesMetadata);
-    }
-
-    @Test
-    public void should_generate_expected_bootstrap_network_file() throws Exception {
-        // Given
-
-        // When
-        generateOkdIgnitionFilesInstallationStep.commandToExecute();
-
-        // Then
-        final String generatedNetwork = new Scanner(new FileInputStream("/tmp/okd/bootstrap.sandbox.okd.local/etc/NetworkManager/system-connections/ens3.nmconnection")).useDelimiter("\\A").next();
-        final String expectedNetwork = new Scanner(getClass().getResourceAsStream("/expected/okd/bootstrap/network")).useDelimiter("\\A").next();
-
-        assertThat(generatedNetwork).isEqualTo(expectedNetwork);
     }
 
     @Test

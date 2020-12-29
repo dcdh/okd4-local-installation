@@ -5,7 +5,6 @@ import com.damdamdeo.okd_4_local_installation.steps.impl.BaseInstallationPath;
 import com.damdamdeo.okd_4_local_installation.steps.impl.ContainerRegistry;
 import com.damdamdeo.okd_4_local_installation.steps.impl.OkdNetwork;
 import com.damdamdeo.okd_4_local_installation.steps.impl.SshRsaPublicKey;
-import com.damdamdeo.okd_4_local_installation.steps.impl.host.NetworkVM;
 import com.damdamdeo.okd_4_local_installation.steps.impl.host.VmType;
 import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
@@ -64,29 +63,6 @@ public class GenerateOkdIgnitionFilesInstallationStep extends InstallationStep {
         }
     }
 
-    private String generateNetworkConfiguration(final NetworkVM targetNetworkVm, final NetworkVM serviceNetworkVm) {
-        if (!VmType.SERVICES.equals(serviceNetworkVm.getGuestVirtualMachine().getVmType())) {
-            throw new IllegalStateException("Must be the service vm");
-        }
-        try {
-            final PebbleTemplate compiledTemplate = engine.getTemplate("okd/ens3Nmconnection");
-
-            final Map<String, Object> context = new HashMap<>();
-            context.put("addressIp", targetNetworkVm.ip());
-            context.put("okdDnsIp", serviceNetworkVm.ip());
-            context.put("okdNetworkGatewayIp", okdNetwork.gatewayIp());// sans la gateway le curl ne marche pas !!!! et le ping me retourne network unreachable
-            context.put("netmask", okdNetwork.netmask());
-            context.put("clusterBaseDomain", okdNetwork.clusterBaseDomain());
-
-            final Writer writer = new StringWriter();
-            compiledTemplate.evaluate(writer, context);
-
-            return writer.toString();
-        } catch (final IOException ioException) {
-            throw new RuntimeException(ioException);
-        }
-    }
-
     private String generate20EnablePasswordsConf() {
         try {
             final PebbleTemplate compiledTemplate = engine.getTemplate("okd/20EnablePasswordConf");
@@ -118,13 +94,8 @@ public class GenerateOkdIgnitionFilesInstallationStep extends InstallationStep {
         final String installConfigYaml = generateInstallConfigYaml();
         writeFile(String.format("%s/install-config.yaml", baseInstallationPath.path()), installConfigYaml);
 
-        final NetworkVM serviceNetworkVM = okdNetwork.getServiceNetworkVM();
-
         okdNetwork.findNetworkVMsByVmType(VmType.BOOTSTRAP, VmType.MASTER, VmType.WORKER)
                 .forEach(networkVm -> {
-                    final String generatedNetworkConfiguration = generateNetworkConfiguration(networkVm, serviceNetworkVM);
-                    writeFile(String.format("%s/%s/etc/NetworkManager/system-connections/ens3.nmconnection",
-                            baseInstallationPath.path(), networkVm.getFqdn()), generatedNetworkConfiguration, "rw-------");//0600
                     final String generated20enablePasswordsConf = generate20EnablePasswordsConf();
                     writeFile(String.format("%s/%s/etc/ssh/sshd_config.d/20-enable-passwords.conf",
                             baseInstallationPath.path(), networkVm.getFqdn()), generated20enablePasswordsConf, "rw-r--r--");//0644
