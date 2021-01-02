@@ -159,7 +159,16 @@ public class CreateServicesCentOS8GuestVirtualMachineInstallationStepTest {
                         "ssh -i /tmp/okd/id_okd_vm centos@10.0.5.57 'dig api-int.sandbox.okd.local +short | grep 10.0.5.57' && " +
                         "ssh -i /tmp/okd/id_okd_vm centos@10.0.5.57 'dig bootstrap.sandbox.okd.local +short | grep 10.0.5.58' && " +
                         "ssh -i /tmp/okd/id_okd_vm centos@10.0.5.57 'dig control-plane-0.sandbox.okd.local +short | grep 10.0.5.59' && " +
-                        "ssh -i /tmp/okd/id_okd_vm centos@10.0.5.57 'dig etcd-0.sandbox.okd.local +short | grep 10.0.5.59'");
+                        "ssh -i /tmp/okd/id_okd_vm centos@10.0.5.57 'dig etcd-0.sandbox.okd.local +short | grep 10.0.5.59' && " +
+                        "ssh -i /tmp/okd/id_okd_vm centos@10.0.5.57 'dig -x 10.0.5.57 +short | grep okd.local' && " +
+                        "ssh -i /tmp/okd/id_okd_vm centos@10.0.5.57 'dig -x 10.0.5.57 +short | grep lb.sandbox.okd.local' && " +
+                        "ssh -i /tmp/okd/id_okd_vm centos@10.0.5.57 'dig -x 10.0.5.57 +short | grep api.sandbox.okd.local' && " +
+                        "ssh -i /tmp/okd/id_okd_vm centos@10.0.5.57 'dig -x 10.0.5.57 +short | grep api-int.sandbox.okd.local' && " +
+                        "ssh -i /tmp/okd/id_okd_vm centos@10.0.5.57 'dig -x 10.0.5.58 +short | grep bootstrap.sandbox.okd.local' && " +
+                        "ssh -i /tmp/okd/id_okd_vm centos@10.0.5.57 'dig -x 10.0.5.59 +short | grep control-plane-0.sandbox.okd.local' && " +
+                        "ssh -i /tmp/okd/id_okd_vm centos@10.0.5.57 'dig -x 10.0.5.59 +short | grep etcd-0.sandbox.okd.local' && " +
+                        "ssh -i /tmp/okd/id_okd_vm centos@10.0.5.57 'nslookup -type=srv _etcd-server-ssl._tcp.sandbox.okd.local.'"
+                );
     }
 
 }

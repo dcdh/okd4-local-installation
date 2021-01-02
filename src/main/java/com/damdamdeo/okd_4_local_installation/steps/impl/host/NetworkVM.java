@@ -4,6 +4,8 @@ import com.damdamdeo.okd_4_local_installation.steps.impl.GuestVirtualMachine;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public final class NetworkVM {
 
@@ -52,6 +54,19 @@ public final class NetworkVM {
 
     public List<String> getDnsNames() {
         return dnsNames;
+    }
+
+    public Boolean hasEtcdDnsName() {
+        return dnsNames
+                .stream()
+                .anyMatch(dnsName -> dnsName.contains("etcd"));
+    }
+
+    public String getReverseIp() {
+        final String[] splitted = ip.split("\\.");
+        return IntStream.rangeClosed(1, splitted.length)
+                .mapToObj(i -> splitted[splitted.length - i])
+                .collect(Collectors.joining("."));
     }
 
     public String ip() {

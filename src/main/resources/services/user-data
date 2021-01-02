@@ -42,6 +42,19 @@ write_files:
 {% endfor %}
 {% endfor %}
 
+{% for networkVM in networkVMs %}
+{% for dnsName in networkVM.dnsNames %}
+      ptr-record={{ networkVM.reverseIp }}.in-addr.arpa.,{{ dnsName }}
+
+{% endfor %}
+{% endfor %}
+
+{% for networkVM in networkVMs %}
+{% if networkVM.hasEtcdDnsName %}
+      srv-host=_etcd-server-ssl._tcp.{{ clusterName }}.{{ clusterBaseDomain }}.,{{ networkVM.ip }},2380,0,10
+{% endif %}
+{% endfor %}
+
       cache-size=10000
       log-dhcp
       log-queries=extra

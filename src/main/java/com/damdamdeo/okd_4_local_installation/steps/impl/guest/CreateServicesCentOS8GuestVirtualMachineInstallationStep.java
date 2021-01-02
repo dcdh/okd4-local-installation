@@ -98,6 +98,7 @@ public class CreateServicesCentOS8GuestVirtualMachineInstallationStep extends In
             context.put("okd4MachineConfigServerBe", okdNetwork.findNetworkVMsByVmType(VmType.BOOTSTRAP, VmType.MASTER));
             context.put("okd4HttpIngressTrafficBe", okdNetwork.findNetworkVMsByVmType(VmType.MASTER, VmType.WORKER));
             context.put("okd4HttpsIngressTrafficBe", okdNetwork.findNetworkVMsByVmType(VmType.MASTER, VmType.WORKER));
+            context.put("clusterName", okdNetwork.clusterName());
             context.put("clusterBaseDomain", okdNetwork.clusterBaseDomain());
 
             final Writer writer = new StringWriter();
@@ -156,13 +157,24 @@ public class CreateServicesCentOS8GuestVirtualMachineInstallationStep extends In
                 String.format("(while ! %s; do echo 'waiting for dnsmasq service to be ready' && sleep 5; done) && ", sshGuestRemoteCommand.getCommand("systemctl status dnsmasq.service")) +
                 String.format("(while ! %s; do echo 'waiting for haproxy service to be ready' && sleep 5; done) && ", sshGuestRemoteCommand.getCommand("systemctl status haproxy.service")) +
                 String.format("(while ! %s; do echo 'waiting for podman-registry service to be ready' && sleep 5; done) && ", sshGuestRemoteCommand.getCommand("systemctl status podman-registry.service")) +
+                // test dns resolution
                 okdNetwork
                         .networkVMs()
                         .stream()
                         .flatMap(networkVM -> networkVM.getDnsNames()
                                 .stream()
                                 .map(dnsEntryName -> sshGuestRemoteCommand.getCommand(String.format("dig %s +short | grep %s", dnsEntryName, networkVM.getIp()))))
-                        .collect(Collectors.joining(" && "));
+                        .collect(Collectors.joining(" && ")) + " && " +
+                // test dns reverse resolution
+                okdNetwork
+                        .networkVMs()
+                        .stream()
+                        .flatMap(networkVM -> networkVM.getDnsNames()
+                                .stream()
+                                .map(dnsEntryName -> sshGuestRemoteCommand.getCommand(String.format("dig -x %s +short | grep %s", networkVM.getIp(), dnsEntryName))))
+                        .collect(Collectors.joining(" && ")) + " && " +
+                sshGuestRemoteCommand.getCommand(String.format("nslookup -type=srv _etcd-server-ssl._tcp.%s.%s.", okdNetwork.clusterName(), okdNetwork.clusterBaseDomain()))
+        ;
     }
 
     // https://github.com/openshift/installer/tree/master/docs/dev/libvirt
