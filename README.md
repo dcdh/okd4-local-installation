@@ -121,3 +121,46 @@
 > Cf. https://bugzilla.redhat.com/show_bug.cgi?id=824573#c32
 >
 > To test the dhcp you can use this command `dhcping -i -s 10.0.5.1 -c 10.0.5.57 -h 52:54:10:00:05:57 -V`
+
+## oc configuration on nodes
+
+scp -pr -i /opt/okd/id_okd_vm /opt/okd/auth core@10.0.5.58:/var/home/core/auth
+scp -pr -i /opt/okd/id_okd_vm /opt/okd/auth core@10.0.5.59:/var/home/core/auth
+
+ssh -i /opt/okd/id_okd_vm core@10.0.5.58 'echo "export KUBECONFIG=~/auth/kubeconfig" >> ~/.bashrc'
+ssh -i /opt/okd/id_okd_vm core@10.0.5.59 'echo "export KUBECONFIG=~/auth/kubeconfig" >> ~/.bashrc'
+
+## some oc tips
+
+> get cluster operator (check them using **watch** to know when the node is working)
+**oc get co**
+
+oc cluster-info
+
+oc get nodes -o wide
+
+oc describe node control-plane-0
+
+oc whoami
+
+oc get pod --all-namespaces -o wide
+
+> to understand why a co is not ready...
+**oc describe co dns**
+
+> get all daemonset
+**oc get ds --all-namespaces**
+
+> describe a daemonset
+**oc describe ds dns-default -n openshift-dns**
+
+> get cluster info version
+**oc get clusterversion**
+
+> console web
+**https://console-openshift-console.apps.sandbox.okd.local/**
+
+## What to do after rebooting a node
+> need to approve all certificates
+> https://github.com/openshift/installer/issues/3711
+**oc get csr -o name | xargs oc adm certificate approve**
