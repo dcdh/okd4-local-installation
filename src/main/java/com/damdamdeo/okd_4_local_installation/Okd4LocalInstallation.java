@@ -266,7 +266,8 @@ public class Okd4LocalInstallation {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Okd4LocalInstallation.class);
 
-    private static final String QEMU_REMOTE_FEDORA_CORE_OS = "https://builds.coreos.fedoraproject.org/prod/streams/stable/builds/32.20201104.3.0/x86_64/fedora-coreos-32.20201104.3.0-qemu.x86_64.qcow2.xz";
+//    private static final String QEMU_REMOTE_FEDORA_CORE_OS = "https://builds.coreos.fedoraproject.org/prod/streams/stable/builds/32.20201104.3.0/x86_64/fedora-coreos-32.20201104.3.0-qemu.x86_64.qcow2.xz";
+    private static final String QEMU_REMOTE_FEDORA_CORE_OS = "https://builds.coreos.fedoraproject.org/prod/streams/stable/builds/32.20200629.3.0/x86_64/fedora-coreos-32.20200629.3.0-qemu.x86_64.qcow2.xz";
 
     private static final String QEMU_REMOTE_CENTOS8 = "https://cloud.centos.org/centos/8/x86_64/images/CentOS-8-GenericCloud-8.2.2004-20200611.2.x86_64.qcow2";
 
@@ -347,15 +348,14 @@ public class Okd4LocalInstallation {
                         .collect(Collectors.toList()),
                 Arrays.asList(
                         new CreateOkdFCOSGuestVirtualMachineInstallationStep(baseInstallationPath,
-                                new FedoraCoreOSDisk(baseInstallationPath, "fedora-coreos-32.20201104.3.0-qemu.x86_64.qcow2"),
+                                new FedoraCoreOSDisk(baseInstallationPath, "fedora-coreos-32.20200629.3.0-qemu.x86_64.qcow2"),
                                 bootstrapGuestVirtualMachine,
                                 okdNetwork),
                         new CreateOkdFCOSGuestVirtualMachineInstallationStep(baseInstallationPath,
-                                new FedoraCoreOSDisk(baseInstallationPath, "fedora-coreos-32.20201104.3.0-qemu.x86_64.qcow2"),
+                                new FedoraCoreOSDisk(baseInstallationPath, "fedora-coreos-32.20200629.3.0-qemu.x86_64.qcow2"),
                                 controlPlane0GuestVirtualMachine,
                                 okdNetwork)
                         )
-//                Arrays.asList().stream().map(CreateOkdFCOSGuestVirtualMachineInstallationStep).collect(Collectors.toList())
         )
                 .flatMap(Collection::stream)
                 .filter(installationStep -> {
