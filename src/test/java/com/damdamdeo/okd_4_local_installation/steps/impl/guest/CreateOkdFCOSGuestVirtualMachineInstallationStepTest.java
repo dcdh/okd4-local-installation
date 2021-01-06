@@ -108,6 +108,7 @@ public class CreateOkdFCOSGuestVirtualMachineInstallationStepTest {
         assertThat(commandToExecute)
                 .isEqualTo("chcon -t virt_image_t /tmp/okd/bootstrap.sandbox.okd.local.ign && " +
                         "cp -f /tmp/okd/fedora-coreos-32.20201104.3.0-qemu.x86_64.qcow2 /tmp/okd/bootstrap.sandbox.okd.local/fedora-coreos-32.20201104.3.0-qemu.x86_64.qcow2 && " +
+                        "chmod 777 /tmp/okd/bootstrap.sandbox.okd.local/fedora-coreos-32.20201104.3.0-qemu.x86_64.qcow2 && " +
                         "qemu-img resize /tmp/okd/bootstrap.sandbox.okd.local/fedora-coreos-32.20201104.3.0-qemu.x86_64.qcow2 25G && " +
                         "virsh create /tmp/okd/bootstrap.sandbox.okd.local/vm.xml");
     }
