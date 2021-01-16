@@ -102,20 +102,6 @@ public class GenerateOkdIgnitionFilesInstallationStepTest {
     }
 
     @Test
-    public void should_generate_expected_control_plane_0_network_file() throws Exception {
-        // Given
-
-        // When
-        generateOkdIgnitionFilesInstallationStep.commandToExecute();
-
-        // Then
-        final String generatedNetwork = new Scanner(new FileInputStream("/tmp/okd/control-plane-0.sandbox.okd.local/etc/NetworkManager/system-connections/ens2.nmconnection")).useDelimiter("\\A").next();
-        final String expectedNetwork = new Scanner(getClass().getResourceAsStream("/expected/okd/control-plane0/network")).useDelimiter("\\A").next();
-
-        assertThat(generatedNetwork).isEqualTo(expectedNetwork);
-    }
-
-    @Test
     public void should_generate_expected_bootstrap_enable_passwords_conf_file() throws Exception {
         // Given
 
