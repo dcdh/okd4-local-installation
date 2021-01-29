@@ -144,8 +144,9 @@ public class CreateServicesCentOS8GuestVirtualMachineInstallationStep extends In
         writeFile(String.format("%s/%s/vm.xml", baseInstallationPath.path(), serviceNetworkVM.getFqdn()), virtualMachine);
 
         final String serviceNetworkIp = serviceNetworkVM.ip();
-
-        return String.format("sed -i '/^%s/d' ~/.ssh/known_hosts && ", serviceNetworkVM.ip()) +
+        return String.format("mkdir -p ~/.ssh && ") +
+                String.format(">> ~/.ssh/known_hosts && ") +
+                String.format("sed -i '/^%s/d' ~/.ssh/known_hosts && ", serviceNetworkVM.ip()) +
                 String.format("mkdir -p %s/%s/ && ", baseInstallationPath.path(), serviceNetworkVM.getFqdn()) +
                 String.format("/bin/cp -rf %s %s/%s/%s && ", centOS8Disk.diskFrom(), baseInstallationPath.path(), serviceNetworkVM.getFqdn(), centOS8Disk.fileName()) +
                 String.format("genisoimage -output %1$s/%2$s/boot-init.iso -volid cidata -joliet -r %1$s/%2$s/user-data %1$s/%2$s/meta-data && ", baseInstallationPath.path(), serviceNetworkVM.getFqdn()) +
