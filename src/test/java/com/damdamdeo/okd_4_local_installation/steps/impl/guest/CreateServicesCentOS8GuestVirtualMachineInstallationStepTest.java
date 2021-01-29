@@ -143,7 +143,7 @@ public class CreateServicesCentOS8GuestVirtualMachineInstallationStepTest {
         assertThat(commandToExecute)
                 .isEqualTo("sed -i '/^10.0.5.57/d' ~/.ssh/known_hosts && " +
                         "mkdir -p /tmp/okd/services.sandbox.okd.local/ && " +
-                        "cp -f /tmp/okd/CentOS-8-GenericCloud-8.2.2004-20200611.2.x86_64.qcow2 /tmp/okd/services.sandbox.okd.local/CentOS-8-GenericCloud-8.2.2004-20200611.2.x86_64.qcow2 && " +
+                        "/bin/cp -rf /tmp/okd/CentOS-8-GenericCloud-8.2.2004-20200611.2.x86_64.qcow2 /tmp/okd/services.sandbox.okd.local/CentOS-8-GenericCloud-8.2.2004-20200611.2.x86_64.qcow2 && " +
                         "genisoimage -output /tmp/okd/services.sandbox.okd.local/boot-init.iso -volid cidata -joliet -r /tmp/okd/services.sandbox.okd.local/user-data /tmp/okd/services.sandbox.okd.local/meta-data && " +
                         "qemu-img resize /tmp/okd/services.sandbox.okd.local/CentOS-8-GenericCloud-8.2.2004-20200611.2.x86_64.qcow2 25G && " +
                         "virsh create /tmp/okd/services.sandbox.okd.local/vm.xml && " +

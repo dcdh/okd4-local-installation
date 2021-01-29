@@ -147,7 +147,7 @@ public class CreateServicesCentOS8GuestVirtualMachineInstallationStep extends In
 
         return String.format("sed -i '/^%s/d' ~/.ssh/known_hosts && ", serviceNetworkVM.ip()) +
                 String.format("mkdir -p %s/%s/ && ", baseInstallationPath.path(), serviceNetworkVM.getFqdn()) +
-                String.format("cp -f %s %s/%s/%s && ", centOS8Disk.diskFrom(), baseInstallationPath.path(), serviceNetworkVM.getFqdn(), centOS8Disk.fileName()) +
+                String.format("/bin/cp -rf %s %s/%s/%s && ", centOS8Disk.diskFrom(), baseInstallationPath.path(), serviceNetworkVM.getFqdn(), centOS8Disk.fileName()) +
                 String.format("genisoimage -output %1$s/%2$s/boot-init.iso -volid cidata -joliet -r %1$s/%2$s/user-data %1$s/%2$s/meta-data && ", baseInstallationPath.path(), serviceNetworkVM.getFqdn()) +
                 String.format("qemu-img resize %s/%s/CentOS-8-GenericCloud-8.2.2004-20200611.2.x86_64.qcow2 25G && ", baseInstallationPath.path(), serviceNetworkVM.getFqdn()) +
                 String.format("virsh create %s/%s/vm.xml && ", baseInstallationPath.path(), serviceNetworkVM.getFqdn()) +
