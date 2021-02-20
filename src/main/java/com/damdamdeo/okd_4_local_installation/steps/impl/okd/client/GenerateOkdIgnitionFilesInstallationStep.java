@@ -99,6 +99,8 @@ public class GenerateOkdIgnitionFilesInstallationStep extends InstallationStep {
                     final String generated20enablePasswordsConf = generate20EnablePasswordsConf();
                     writeFile(String.format("%s/%s/etc/ssh/sshd_config.d/20-enable-passwords.conf",
                             baseInstallationPath.path(), networkVm.getFqdn()), generated20enablePasswordsConf, "rw-r--r--");//0644
+                    writeFile(String.format("%s/%s/etc/sysctl.d/20-silence-audit.conf",
+                            baseInstallationPath.path(), networkVm.getFqdn()), "kernel.printk=4", "rw-r--r--");//0644
                 });
         return String.format("mkdir -p %s && ", baseInstallationPath.path()) +
                 String.format("rm -f %s/.openshift_install.log && ", baseInstallationPath.path()) +
