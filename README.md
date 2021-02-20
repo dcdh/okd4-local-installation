@@ -130,6 +130,11 @@ scp -pr -i /opt/okd/id_okd_vm /opt/okd/auth core@10.0.5.59:/var/home/core/auth
 ssh -i /opt/okd/id_okd_vm core@10.0.5.58 'echo "export KUBECONFIG=~/auth/kubeconfig" >> ~/.bashrc'
 ssh -i /opt/okd/id_okd_vm core@10.0.5.59 'echo "export KUBECONFIG=~/auth/kubeconfig" >> ~/.bashrc'
 
+## connection
+
+ssh -i /opt/okd/id_okd_vm core@10.0.5.58
+ssh -i /opt/okd/id_okd_vm core@10.0.5.59
+
 ## some oc tips
 
 > get cluster operator (check them using **watch** to know when the node is working)
@@ -164,3 +169,9 @@ oc get pod --all-namespaces -o wide
 > need to approve all certificates
 > https://github.com/openshift/installer/issues/3711
 **oc get csr -o name | xargs oc adm certificate approve**
+
+
+## Audit
+
+oc get configmaps -n openshift-apiserver
+
