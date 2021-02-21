@@ -175,3 +175,9 @@ oc get pod --all-namespaces -o wide
 
 oc get configmaps -n openshift-apiserver
 
+## Get okd images for release
+
+https://origin-release.apps.ci.l2s4.p1.openshiftapps.com/releasestream/4.7.0-0.okd/release/4.7.0-0.okd-2021-02-20-151031
+
+oc adm release info --pullspecs registry.ci.openshift.org/origin/release:4.7.0-0.okd-2021-02-20-151031
+
