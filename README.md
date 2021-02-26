@@ -172,8 +172,31 @@ oc get pod --all-namespaces -o wide
 
 
 ## Audit
+> https://github.com/openshift/cluster-kube-apiserver-operator/issues/1026
+
 
 oc get configmaps -n openshift-apiserver
+
+oc get clusteroperator/openshift-apiserver
+
+oc describe clusteroperator/openshift-apiserver
+
+### mass log produced in **/var/log/kube-apiserver**
+
+```
+[root@control-plane-0 kube-apiserver]# ls -ltrh
+total 229M
+-rw-r--r--. 1 root root 280K 24 févr. 21:39 termination.log
+-rw-r--r--. 1 root root 100M 24 févr. 21:50 audit-2021-02-24T21-50-25.487.log
+-rw-r--r--. 1 root root  72M 24 févr. 22:02 audit.log
+```
+
+oc describe pod kube-apiserver-control-plane-0 -n openshift-kube-apiserver
+
+Operator in project **openshift-kube-apiserver-operator**.
+
+https://github.com/openshift/cluster-kube-apiserver-operator
+
 
 ## Get okd images for release
 
