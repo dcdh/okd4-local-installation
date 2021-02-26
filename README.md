@@ -197,6 +197,10 @@ Operator in project **openshift-kube-apiserver-operator**.
 
 https://github.com/openshift/cluster-kube-apiserver-operator
 
+1. execute `oc patch kubeapiserver cluster --type=merge -p '{"spec":{"unsupportedConfigOverrides":{"apiServerArguments":{"audit-log-path":[]}}}}'`
+1. reboot node
+
+Do not forget to re-approve all certificates
 
 ## Get okd images for release
 
