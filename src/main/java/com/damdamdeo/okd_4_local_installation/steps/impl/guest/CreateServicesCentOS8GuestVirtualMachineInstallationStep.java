@@ -4,6 +4,7 @@ import com.damdamdeo.okd_4_local_installation.steps.InstallationStep;
 import com.damdamdeo.okd_4_local_installation.steps.impl.*;
 import com.damdamdeo.okd_4_local_installation.steps.impl.host.NetworkVM;
 import com.damdamdeo.okd_4_local_installation.steps.impl.host.VmType;
+import com.damdamdeo.okd_4_local_installation.steps.impl.okd.client.OkdRemoteInstaller;
 import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
 
@@ -25,6 +26,7 @@ public class CreateServicesCentOS8GuestVirtualMachineInstallationStep extends In
     private final OkdNetwork okdNetwork;
     private final GuestVirtualMachine guestVirtualMachine;
     private final SshGuestRemoteCommand sshGuestRemoteCommand;
+    private final OkdRemoteInstaller okdRemoteInstaller;
 
     // https://cloud.centos.org/centos/8/x86_64/images/CentOS-8-GenericCloud-8.2.2004-20200611.2.x86_64.qcow2
     public CreateServicesCentOS8GuestVirtualMachineInstallationStep(final BaseInstallationPath baseInstallationPath,
@@ -33,7 +35,8 @@ public class CreateServicesCentOS8GuestVirtualMachineInstallationStep extends In
                                                                     final SshRsaPublicKey sshRsaPublicKey,
                                                                     final ContainerRegistry containerRegistry,
                                                                     final GuestVirtualMachine guestVirtualMachine,
-                                                                    final OkdNetwork okdNetwork) {
+                                                                    final OkdNetwork okdNetwork,
+                                                                    final OkdRemoteInstaller okdRemoteInstaller) {
         this.baseInstallationPath = Objects.requireNonNull(baseInstallationPath);
         this.centOS8Disk = Objects.requireNonNull(centOS8Disk);
         this.sshRsaPublicKey = Objects.requireNonNull(sshRsaPublicKey);
@@ -47,6 +50,7 @@ public class CreateServicesCentOS8GuestVirtualMachineInstallationStep extends In
         this.sshGuestRemoteCommand = new SshGuestRemoteCommand(baseInstallationPath,
                 keyName,
                 okdNetwork.getNetworkVmByGuestVirtualMachine(guestVirtualMachine));
+        this.okdRemoteInstaller = Objects.requireNonNull(okdRemoteInstaller);
     }
 
     @Override
@@ -100,6 +104,10 @@ public class CreateServicesCentOS8GuestVirtualMachineInstallationStep extends In
             context.put("okd4HttpsIngressTrafficBe", okdNetwork.findNetworkVMsByVmType(VmType.MASTER, VmType.WORKER));
             context.put("clusterName", okdNetwork.clusterName());
             context.put("clusterBaseDomain", okdNetwork.clusterBaseDomain());
+            context.put("nbOfWorkers", okdNetwork.nbOfWorkers());
+            context.put("nbOfMasters", okdNetwork.nbOfMasters());
+            context.put("podmanRegistryDnsName", okdNetwork.getServiceNetworkVM().getFqdn());
+            context.put("remoteInstallerUrl", okdRemoteInstaller.remoteInstallerUrl());
 
             final Writer writer = new StringWriter();
             compiledTemplate.evaluate(writer, context);

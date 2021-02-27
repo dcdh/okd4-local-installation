@@ -225,7 +225,8 @@ public class Okd4LocalInstallation {
                                 sshRsaPublicKey,
                                 containerRegistry,
                                 serviceGuestVirtualMachine,
-                                okdNetwork)
+                                okdNetwork,
+                                new OkdRemoteInstaller(REMOTE_OKD_INSTALLER))
                 ),
                 PODMAN_IMAGES.stream().map(podmanImage -> new PullOkdPodmanImageToServicesPodmanRegistryGuestVMInstallationStep(podmanImage, baseInstallationPath,
                         "id_okd_vm",

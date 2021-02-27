@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+@Deprecated// Remove after user-data is working
 public class GenerateOkdIgnitionFilesInstallationStep extends InstallationStep {
 
     private final PebbleEngine engine = new PebbleEngine.Builder().build();

@@ -25,6 +25,9 @@ packages:
   - podman
   - skopeo
   - jq
+  - python3
+  - python3-pyyaml
+  - python3-magic
 
 write_files:
   - path: /etc/dnsmasq.d/okd_dnsmasq.conf
@@ -198,6 +201,94 @@ write_files:
 
       [Install]
       WantedBy=multi-user.target
+  - path: /opt/okd/installation/install-config.yaml
+    content: |
+      apiVersion: v1
+      baseDomain: {{ clusterBaseDomain }}
+
+      compute:
+      - hyperthreading: Enabled
+        name: worker
+        replicas: {{ nbOfWorkers }}
+
+      controlPlane:
+        hyperthreading: Enabled
+        name: master
+        replicas: {{ nbOfMasters }}
+
+      metadata:
+        name: {{ clusterName }}
+
+      networking:
+        clusterNetwork:
+        - cidr: 10.128.0.0/14
+          hostPrefix: 23
+        networkType: OpenShiftSDN
+        serviceNetwork:
+        - 172.30.0.0/16
+      platform:
+        none: {}
+      fips: false
+      pullSecret: '{"auths":{"fake":{"auth": "bar"}}}'
+      sshKey: '{{ sshPublicKey }}'
+      additionalTrustBundle: |
+{% set lines = domainCrt | split ('\n') %}
+{% for line in lines %}
+        {{ line }}
+
+{% endfor %}
+      imageContentSources:
+      - mirrors:
+        - {{ podmanRegistryDnsName }}:5000/openshift/okd
+        source: quay.io/openshift/okd
+      - mirrors:
+        - {{ podmanRegistryDnsName }}:5000/openshift/okd-content
+        source: quay.io/openshift/okd-content
+  - path: /opt/okd/node/etc/ssh/sshd_config.d/20-enable-passwords.conf
+    permissions: '0644'
+    content: |
+      # Fedora CoreOS disables SSH password login by default.
+      # Enable it.
+      # This file must sort before 40-disable-passwords.conf.
+      PasswordAuthentication yes
+  - path: /opt/okd/node/etc/sysctl.d/20-silence-audit.conf
+    permissions: '0644'
+    content: |
+      kernel.printk=4
+  - path: /opt/okd/reset_installation.sh
+    permissions: '0755'
+    content: |
+      rm -rf /opt/okd/*.ign
+      rm -rf /opt/okd/auth/
+      rm -f /opt/okd/.openshift_install.log
+      rm -f /opt/okd/.openshift_install_state.json
+  - path: /opt/okd/run_installation.sh
+    permissions: '0755'
+    content: |
+      cp /opt/okd/installation/install-config.yaml /opt/okd/installation/install-config.yaml.bak
+      if [ ! -f "/opt/okd/installation/openshift-install-linux.tar.gz" ]
+      then
+        curl -L -o /opt/okd/installation/openshift-install-linux.tar.gz {{ remoteInstallerUrl }}
+
+      fi
+      if [ ! -f "/opt/okd/installation/openshift-install" ]
+      then
+        find /opt/okd/installation -type f -name "openshift-install-linux*" | xargs tar --directory /opt/okd/installation -zxvf
+      fi
+      /opt/okd/installation/openshift-install create manifests --dir=/opt/okd/installation
+      /opt/okd/installation/openshift-install create ignition-configs --dir=/opt/okd/installation
+
+      if [ ! -f "/opt/okd/installation/filetranspile" ]
+      then
+        curl -o /opt/okd/installation/filetranspile https://raw.githubusercontent.com/ashcrow/filetranspiler/master/filetranspile
+        chmod +x /opt/okd/installation/filetranspile
+      fi
+
+      /opt/okd/installation/filetranspile -i /opt/okd/installation/bootstrap.ign -f /opt/okd/node -o /opt/okd/installation/bootstrap-enhanced.ign
+      /opt/okd/installation/filetranspile -i /opt/okd/installation/master.ign -f /opt/okd/node -o /opt/okd/installation/master-enhanced.ign
+      /opt/okd/installation/filetranspile -i /opt/okd/installation/worker.ign -f /opt/okd/node -o /opt/okd/installation/worker-enhanced.ign
+
+      cd /opt/okd/installation && python3 -m http.server 8000 &
 
 # The message is located in /var/log/cloud-init.log
 final_message: "The system is finally up, after $UPTIME seconds"
@@ -222,3 +313,4 @@ runcmd:
   - mkdir -p /var/lib/registry/data
   - systemctl start podman-registry
   - systemctl enable podman-registry
+  - /opt/okd/run_installation.sh
