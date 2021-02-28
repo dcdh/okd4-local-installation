@@ -1,4 +1,4 @@
-package com.damdamdeo.okd_4_local_installation.steps.impl;
+package com.damdamdeo.okd_4_local_installation.steps.impl.host;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

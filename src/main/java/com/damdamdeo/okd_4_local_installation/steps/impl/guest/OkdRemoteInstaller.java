@@ -1,4 +1,4 @@
-package com.damdamdeo.okd_4_local_installation.steps.impl.okd.client;
+package com.damdamdeo.okd_4_local_installation.steps.impl.guest;
 
 import java.util.Objects;
 

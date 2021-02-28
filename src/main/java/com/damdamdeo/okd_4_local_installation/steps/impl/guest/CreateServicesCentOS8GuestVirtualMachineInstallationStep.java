@@ -4,7 +4,6 @@ import com.damdamdeo.okd_4_local_installation.steps.InstallationStep;
 import com.damdamdeo.okd_4_local_installation.steps.impl.*;
 import com.damdamdeo.okd_4_local_installation.steps.impl.host.NetworkVM;
 import com.damdamdeo.okd_4_local_installation.steps.impl.host.VmType;
-import com.damdamdeo.okd_4_local_installation.steps.impl.okd.client.OkdRemoteInstaller;
 import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
 
@@ -183,6 +182,7 @@ public class CreateServicesCentOS8GuestVirtualMachineInstallationStep extends In
                                 .map(dnsEntryName -> sshGuestRemoteCommand.getCommand(String.format("dig -x %s +short | grep %s", networkVM.getIp(), dnsEntryName))))
                         .collect(Collectors.joining(" && ")) + " && " +
                 sshGuestRemoteCommand.getCommand(String.format("nslookup -type=srv _etcd-server-ssl._tcp.%s.%s.", okdNetwork.clusterName(), okdNetwork.clusterBaseDomain()))
+                // test ign exposed !
         ;
     }
 
