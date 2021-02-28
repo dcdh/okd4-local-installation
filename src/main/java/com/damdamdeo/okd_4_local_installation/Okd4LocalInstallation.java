@@ -6,7 +6,6 @@ import com.damdamdeo.okd_4_local_installation.steps.impl.guest.CreateDomainCerti
 import com.damdamdeo.okd_4_local_installation.steps.impl.guest.CreateOkdFCOSGuestVirtualMachineInstallationStep;
 import com.damdamdeo.okd_4_local_installation.steps.impl.guest.CreateServicesCentOS8GuestVirtualMachineInstallationStep;
 import com.damdamdeo.okd_4_local_installation.steps.impl.host.*;
-import com.damdamdeo.okd_4_local_installation.steps.impl.okd.client.GenerateOkdIgnitionFilesInstallationStep;
 import com.damdamdeo.okd_4_local_installation.steps.impl.okd.client.OkdRemoteInstaller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -214,11 +213,6 @@ public class Okd4LocalInstallation {
                                 baseInstallationPath
                         ),
                         new UnzipQEmuDisksInstallationStep(baseInstallationPath),
-                        new GenerateOkdIgnitionFilesInstallationStep(baseInstallationPath,
-                                new OkdRemoteInstaller(REMOTE_OKD_INSTALLER),
-                                sshRsaPublicKey,
-                                containerRegistry,
-                                okdNetwork),
                         new CreateServicesCentOS8GuestVirtualMachineInstallationStep(baseInstallationPath,
                                 "id_okd_vm",
                                 new CentOS8Disk(baseInstallationPath, "CentOS-8-GenericCloud-8.2.2004-20200611.2.x86_64.qcow2"),
