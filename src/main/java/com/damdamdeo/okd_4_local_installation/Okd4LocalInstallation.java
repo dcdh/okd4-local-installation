@@ -2,6 +2,7 @@ package com.damdamdeo.okd_4_local_installation;
 
 import com.damdamdeo.okd_4_local_installation.prerequists.impl.*;
 import com.damdamdeo.okd_4_local_installation.steps.impl.*;
+import com.damdamdeo.okd_4_local_installation.steps.impl.guest.PullOkdPodmanImageToServicesPodmanRegistryGuestVMInstallationStep;
 import com.damdamdeo.okd_4_local_installation.steps.impl.host.CreateDomainCertificatesForPodmanRegistryInstallationStep;
 import com.damdamdeo.okd_4_local_installation.steps.impl.guest.CreateOkdFCOSGuestVirtualMachineInstallationStep;
 import com.damdamdeo.okd_4_local_installation.steps.impl.guest.CreateServicesCentOS8GuestVirtualMachineInstallationStep;
