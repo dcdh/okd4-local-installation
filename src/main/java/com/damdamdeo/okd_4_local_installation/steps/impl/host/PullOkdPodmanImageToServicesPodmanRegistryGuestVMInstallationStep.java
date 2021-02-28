@@ -1,11 +1,11 @@
-package com.damdamdeo.okd_4_local_installation.steps.impl;
+package com.damdamdeo.okd_4_local_installation.steps.impl.host;
 
 import com.damdamdeo.okd_4_local_installation.steps.InstallationStep;
-import com.damdamdeo.okd_4_local_installation.steps.impl.host.NetworkVM;
-import com.damdamdeo.okd_4_local_installation.steps.impl.host.VmType;
+import com.damdamdeo.okd_4_local_installation.steps.impl.BaseInstallationPath;
+import com.damdamdeo.okd_4_local_installation.steps.impl.PodmanImage;
+import com.damdamdeo.okd_4_local_installation.steps.impl.SshGuestRemoteCommand;
 
 import java.util.Objects;
-import java.util.stream.Stream;
 
 public class PullOkdPodmanImageToServicesPodmanRegistryGuestVMInstallationStep extends InstallationStep {
 

@@ -6,8 +6,8 @@ import com.damdamdeo.okd_4_local_installation.steps.impl.guest.CreateDomainCerti
 import com.damdamdeo.okd_4_local_installation.steps.impl.guest.CreateOkdFCOSGuestVirtualMachineInstallationStep;
 import com.damdamdeo.okd_4_local_installation.steps.impl.guest.CreateServicesCentOS8GuestVirtualMachineInstallationStep;
 import com.damdamdeo.okd_4_local_installation.steps.impl.host.*;
-import com.damdamdeo.okd_4_local_installation.steps.impl.okd.client.GenerateOkdIgnitionFilesInstallationStep;
-import com.damdamdeo.okd_4_local_installation.steps.impl.okd.client.OkdRemoteInstaller;
+import com.damdamdeo.okd_4_local_installation.steps.impl.host.GenerateOkdIgnitionFilesInstallationStep;
+import com.damdamdeo.okd_4_local_installation.steps.impl.host.OkdRemoteInstaller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
