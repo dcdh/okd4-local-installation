@@ -1,4 +1,4 @@
-package com.damdamdeo.okd_4_local_installation.steps.impl.guest;
+package com.damdamdeo.okd_4_local_installation.steps.impl.host;
 
 import com.damdamdeo.okd_4_local_installation.steps.InstallationStep;
 import com.damdamdeo.okd_4_local_installation.steps.impl.BaseInstallationPath;
