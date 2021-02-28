@@ -1,7 +1,5 @@
 package com.damdamdeo.okd_4_local_installation.steps.impl;
 
-import com.damdamdeo.okd_4_local_installation.steps.impl.host.VmType;
-
 import java.util.Objects;
 
 public final class GuestVirtualMachine {

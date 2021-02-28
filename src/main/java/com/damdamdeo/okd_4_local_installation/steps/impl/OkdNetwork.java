@@ -1,8 +1,5 @@
 package com.damdamdeo.okd_4_local_installation.steps.impl;
 
-import com.damdamdeo.okd_4_local_installation.steps.impl.host.NetworkVM;
-import com.damdamdeo.okd_4_local_installation.steps.impl.host.VmType;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;

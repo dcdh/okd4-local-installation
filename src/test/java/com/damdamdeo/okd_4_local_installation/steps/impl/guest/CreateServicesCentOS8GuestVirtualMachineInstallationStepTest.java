@@ -1,8 +1,8 @@
 package com.damdamdeo.okd_4_local_installation.steps.impl.guest;
 
 import com.damdamdeo.okd_4_local_installation.steps.impl.*;
-import com.damdamdeo.okd_4_local_installation.steps.impl.host.NetworkVM;
-import com.damdamdeo.okd_4_local_installation.steps.impl.host.VmType;
+import com.damdamdeo.okd_4_local_installation.steps.impl.NetworkVM;
+import com.damdamdeo.okd_4_local_installation.steps.impl.VmType;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

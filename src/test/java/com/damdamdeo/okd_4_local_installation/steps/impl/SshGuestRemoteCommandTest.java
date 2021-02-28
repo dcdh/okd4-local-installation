@@ -1,7 +1,5 @@
 package com.damdamdeo.okd_4_local_installation.steps.impl;
 
-import com.damdamdeo.okd_4_local_installation.steps.impl.host.NetworkVM;
-import com.damdamdeo.okd_4_local_installation.steps.impl.host.VmType;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;

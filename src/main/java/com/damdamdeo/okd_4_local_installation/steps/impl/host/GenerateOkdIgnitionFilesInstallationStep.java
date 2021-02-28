@@ -1,10 +1,7 @@
 package com.damdamdeo.okd_4_local_installation.steps.impl.host;
 
 import com.damdamdeo.okd_4_local_installation.steps.InstallationStep;
-import com.damdamdeo.okd_4_local_installation.steps.impl.BaseInstallationPath;
-import com.damdamdeo.okd_4_local_installation.steps.impl.ContainerRegistry;
-import com.damdamdeo.okd_4_local_installation.steps.impl.OkdNetwork;
-import com.damdamdeo.okd_4_local_installation.steps.impl.SshRsaPublicKey;
+import com.damdamdeo.okd_4_local_installation.steps.impl.*;
 import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
 

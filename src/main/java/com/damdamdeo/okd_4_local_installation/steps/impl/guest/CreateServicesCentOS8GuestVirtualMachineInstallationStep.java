@@ -2,8 +2,8 @@ package com.damdamdeo.okd_4_local_installation.steps.impl.guest;
 
 import com.damdamdeo.okd_4_local_installation.steps.InstallationStep;
 import com.damdamdeo.okd_4_local_installation.steps.impl.*;
-import com.damdamdeo.okd_4_local_installation.steps.impl.host.NetworkVM;
-import com.damdamdeo.okd_4_local_installation.steps.impl.host.VmType;
+import com.damdamdeo.okd_4_local_installation.steps.impl.NetworkVM;
+import com.damdamdeo.okd_4_local_installation.steps.impl.VmType;
 import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
 

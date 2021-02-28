@@ -1,6 +1,4 @@
-package com.damdamdeo.okd_4_local_installation.steps.impl.host;
-
-import com.damdamdeo.okd_4_local_installation.steps.impl.GuestVirtualMachine;
+package com.damdamdeo.okd_4_local_installation.steps.impl;
 
 import java.util.List;
 import java.util.Objects;
