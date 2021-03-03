@@ -215,11 +215,6 @@ public class Okd4LocalInstallation {
                                 baseInstallationPath
                         ),
                         new UnzipQEmuDisksInstallationStep(baseInstallationPath),
-                        new GenerateOkdIgnitionFilesInstallationStep(baseInstallationPath,
-                                new OkdRemoteInstaller(REMOTE_OKD_INSTALLER),
-                                sshRsaPublicKey,
-                                containerRegistry,
-                                okdNetwork),
                         new CreateServicesCentOS8GuestVirtualMachineInstallationStep(baseInstallationPath,
                                 "id_okd_vm",
                                 new CentOS8Disk(baseInstallationPath, "CentOS-8-GenericCloud-8.2.2004-20200611.2.x86_64.qcow2"),
@@ -233,6 +228,11 @@ public class Okd4LocalInstallation {
                         okdNetwork.getServiceNetworkVM()))
                         .collect(Collectors.toList()),
                 Arrays.asList(
+                        new GenerateOkdIgnitionFilesInstallationStep(baseInstallationPath,
+                                new OkdRemoteInstaller(REMOTE_OKD_INSTALLER),
+                                sshRsaPublicKey,
+                                containerRegistry,
+                                okdNetwork),
                         new CreateOkdFCOSGuestVirtualMachineInstallationStep(baseInstallationPath,
                                 new FedoraCoreOSDisk(baseInstallationPath, "fedora-coreos-33.20210117.3.2-qemu.x86_64.qcow2"),
                                 bootstrapGuestVirtualMachine,
