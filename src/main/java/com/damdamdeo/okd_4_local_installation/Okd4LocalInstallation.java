@@ -204,7 +204,6 @@ public class Okd4LocalInstallation {
                         new SshKeysToCommunicateBetweenHostAndGuestInstallationStep(baseInstallationPath, "id_okd_vm"),
                         new KvmPackageInstallationStep(),
                         new EnableAndStartLibvirtServiceInstallationStep(),
-                        new DestroyLibvirtDefaultNetworkInstallationStep(),
                         new CreateLibvirtOkdNetworkInstallationStep(baseInstallationPath, okdNetwork),
                         new DownloadQEmuDiskInstallationStep(
                                 QEMU_REMOTE_FEDORA_CORE_OS,
